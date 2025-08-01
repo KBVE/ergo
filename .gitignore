@@ -111,4 +111,3 @@ ergo.mprof
 /dist
 *.pem
 .dccache
-/vendor/*
