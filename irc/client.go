@@ -355,7 +355,7 @@ func (server *Server) RunClient(conn IRCConn) {
 
 	connID := server.generateConnectionID()
 	server.logger.Info("connect-ip", connID, fmt.Sprintf("Client connecting: real IP %v, proxied IP %v", realIP, proxiedIP))
-	
+
 	// Update metrics for new connection
 	if server.metrics != nil {
 		server.metrics.ConnectionsTotal.Inc()
@@ -1332,7 +1332,7 @@ func (client *Client) destroy(session *Session) {
 			client.server.snomasks.Send(sno.LocalDisconnects, fmt.Sprintf(ircfmt.Unescape("Client session disconnected for [a:%s] [h:%s] [ip:%s]"), details.accountName, session.rawHostname, source))
 		}
 		client.server.logger.Info("connect-ip", session.connID, fmt.Sprintf("Disconnecting session of %s from %s", details.nick, source))
-		
+
 		// Update metrics for disconnection
 		if client.server.metrics != nil && shouldDecrement {
 			client.server.metrics.ConnectionsActive.Dec()

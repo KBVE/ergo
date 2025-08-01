@@ -15,25 +15,25 @@ import (
 // Metrics contains all Prometheus metrics for the IRC server
 type Metrics struct {
 	// Connection metrics
-	ConnectionsTotal    prometheus.Counter
-	ConnectionsActive   prometheus.Gauge
-	ConnectionDuration  prometheus.Histogram
-	
+	ConnectionsTotal   prometheus.Counter
+	ConnectionsActive  prometheus.Gauge
+	ConnectionDuration prometheus.Histogram
+
 	// Message metrics
-	MessagesReceived    *prometheus.CounterVec
-	MessagesSent        *prometheus.CounterVec
-	
+	MessagesReceived *prometheus.CounterVec
+	MessagesSent     *prometheus.CounterVec
+
 	// Channel metrics
-	ChannelsActive      prometheus.Gauge
-	ChannelUsers        prometheus.Gauge
-	
+	ChannelsActive prometheus.Gauge
+	ChannelUsers   prometheus.Gauge
+
 	// User metrics
 	UsersOnline         prometheus.Gauge
 	UsersRegistered     prometheus.Gauge
 	AuthenticationTotal *prometheus.CounterVec
-	
+
 	// Server performance metrics
-	CommandDuration     *prometheus.HistogramVec
+	CommandDuration *prometheus.HistogramVec
 }
 
 // NewMetrics creates and registers all Prometheus metrics
@@ -109,22 +109,22 @@ func NewMetrics() *Metrics {
 func (server *Server) StartMetricsServer() error {
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
-	
+
 	metricsServer := &http.Server{
 		Addr:         ":6060",
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
-	
+
 	server.logger.Info("server", fmt.Sprintf("Starting Prometheus metrics server on %s", metricsServer.Addr))
-	
+
 	go func() {
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			server.logger.Error("server", "Metrics server error", err.Error())
 		}
 	}()
-	
+
 	return nil
 }
 
@@ -133,11 +133,11 @@ func (server *Server) UpdateMetrics() {
 	if server.metrics == nil {
 		return
 	}
-	
+
 	// Update connection metrics
 	clients := server.clients.AllClients()
 	server.metrics.ConnectionsActive.Set(float64(len(clients)))
-	
+
 	// Update channel metrics
 	channels := server.channels.Channels()
 	channelCount := len(channels)
@@ -148,7 +148,7 @@ func (server *Server) UpdateMetrics() {
 	}
 	server.metrics.ChannelsActive.Set(float64(channelCount))
 	server.metrics.ChannelUsers.Set(float64(totalChannelUsers))
-	
+
 	// Update user metrics
 	server.metrics.UsersOnline.Set(float64(len(clients)))
 }
