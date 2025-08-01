@@ -23,7 +23,7 @@ LABEL maintainer="Daniel Oaks <daniel@danieloaks.net>,Daniel Thamdrup <dallemon@
       description="Ergo is a modern, experimental IRC server written in Go"
 
 # standard ports listened on
-EXPOSE 6667/tcp 6697/tcp
+EXPOSE 6667/tcp 6697/tcp 6060/tcp
 
 # ergo itself
 COPY --from=build-env /go/bin/ergo \

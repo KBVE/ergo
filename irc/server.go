@@ -103,6 +103,9 @@ type Server struct {
 	apiHandler  http.Handler // always initialized
 	apiListener *utils.ReloadableListener
 	apiServer   *http.Server // nil if API is not enabled
+	
+	// Prometheus metrics
+	metrics *Metrics
 }
 
 // NewServer returns a new Oragono server.
@@ -130,6 +133,9 @@ func NewServer(config *Config, logger *logger.Manager) (*Server, error) {
 	server.snomasks.Initialize()
 
 	server.apiHandler = newAPIHandler(server)
+	
+	// Initialize Prometheus metrics
+	server.metrics = NewMetrics()
 
 	if err := server.applyConfig(config); err != nil {
 		return nil, err
@@ -172,6 +178,20 @@ func (server *Server) Shutdown() {
 // Run starts the server.
 func (server *Server) Run() {
 	defer server.Shutdown()
+	
+	// Start Prometheus metrics server
+	if err := server.StartMetricsServer(); err != nil {
+		server.logger.Error("server", "Failed to start metrics server", err.Error())
+	}
+	
+	// Start periodic metrics updates
+	go func() {
+		ticker := time.NewTicker(15 * time.Second)
+		defer ticker.Stop()
+		for range ticker.C {
+			server.UpdateMetrics()
+		}
+	}()
 
 	for {
 		select {
