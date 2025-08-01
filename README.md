@@ -9,6 +9,8 @@ Ergo (formerly known as Oragono) is a modern IRC server written in Go. Its core 
 
 Ergo is a fork of the [Ergonomadic](https://github.com/jlatt/ergonomadic) IRC daemon <3
 
+KBVE: Just specific changes that would be for KBVE-Network.
+
 ---
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/ergochat/ergo)](https://goreportcard.com/report/github.com/ergochat/ergo)
