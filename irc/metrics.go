@@ -107,11 +107,17 @@ func NewMetrics() *Metrics {
 
 // StartMetricsServer starts the Prometheus metrics HTTP server
 func (server *Server) StartMetricsServer() error {
+	config := server.Config()
+	metricsListener := config.Debug.MetricsListener
+	if metricsListener == "" {
+		metricsListener = ":6060" // default port
+	}
+
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
 
 	metricsServer := &http.Server{
-		Addr:         ":6060",
+		Addr:         metricsListener,
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
@@ -121,7 +127,8 @@ func (server *Server) StartMetricsServer() error {
 
 	go func() {
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			server.logger.Error("server", "Metrics server error", err.Error())
+			server.logger.Error("server", fmt.Sprintf("Metrics server failed to start on %s: %s", metricsServer.Addr, err.Error()))
+			server.logger.Info("server", "Prometheus metrics will not be available")
 		}
 	}()
 

@@ -179,10 +179,8 @@ func (server *Server) Shutdown() {
 func (server *Server) Run() {
 	defer server.Shutdown()
 
-	// Start Prometheus metrics server
-	if err := server.StartMetricsServer(); err != nil {
-		server.logger.Error("server", "Failed to start metrics server", err.Error())
-	}
+	// Start Prometheus metrics server (non-blocking, won't fail server startup)
+	server.StartMetricsServer()
 
 	// Start periodic metrics updates
 	go func() {

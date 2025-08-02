@@ -684,6 +684,7 @@ type Config struct {
 		RecoverFromErrors *bool `yaml:"recover-from-errors"`
 		recoverFromErrors bool
 		PprofListener     string `yaml:"pprof-listener"`
+		MetricsListener   string `yaml:"metrics-listener"`
 	}
 
 	Limits Limits
